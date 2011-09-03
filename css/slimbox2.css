@@ -32,26 +32,21 @@
 
 #lbPrevLink, #lbNextLink {
 	display: block;
+	height:100%;
 	position: absolute;
 	top: 0;
-	width: 50%;
+	width: 60px;
 	outline: none;
 }
 
 #lbPrevLink {
 	left: 0;
-}
-
-#lbPrevLink:hover {
-	background: transparent url(prevlabel.gif) no-repeat 0 15%;
+	background: transparent url(prevlabel.gif) no-repeat 0 0;
 }
 
 #lbNextLink {
 	right: 0;
-}
-
-#lbNextLink:hover {
-	background: transparent url(nextlabel.gif) no-repeat 100% 15%;
+	background: transparent url(nextlabel.gif) no-repeat 100% 0;
 }
 
 #lbBottom {
@@ -70,12 +65,13 @@
 	width: 66px;
 	height: 22px;
 	background: transparent url(closelabel.gif) no-repeat center;
-	margin: 5px 0;
+	margin: 5px 60px 5px 0;
 	outline: none;
 }
 
 #lbCaption, #lbNumber {
 	margin-right: 71px;
+	margin-left: 60px;
 }
 
 #lbCaption {

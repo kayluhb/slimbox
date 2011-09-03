@@ -31,16 +31,15 @@
 		);
 
 		image = $('<div id="lbImage" />').appendTo(center).append(
-			sizer = $('<div style="position: relative;" />').append([
-				prevLink = $('<a id="lbPrevLink" href="#" />').click(previous)[0],
-				nextLink = $('<a id="lbNextLink" href="#" />').click(next)[0]
-			])[0]
+			sizer = $('<div style="position: relative;" />')[0]
 		)[0];
 
 		bottom = $('<div id="lbBottom" />').appendTo(bottomContainer).append([
 			$('<a id="lbCloseLink" href="#" />').add(overlay).click(close)[0],
 			caption = $('<div id="lbCaption" />')[0],
 			number = $('<div id="lbNumber" />')[0],
+			prevLink = $('<a id="lbPrevLink" href="#" />').click(previous)[0],
+			nextLink = $('<a id="lbNextLink" href="#" />').click(next)[0],
 			$('<div style="clear: both;" />')[0]
 		])[0];
 	});
@@ -191,8 +190,7 @@
 	function animateBox() {
 		center.className = "";
 		$(image).css({backgroundImage: "url(" + activeURL + ")", visibility: "hidden", display: ""});
-		$(sizer).width(preload.width);
-		$([sizer, prevLink, nextLink]).height(preload.height);
+		$(sizer).width(preload.width).height(preload.height);
 
 		$(caption).html(images[activeImage][1] || "");
 		$(number).html((((images.length > 1) && options.counterText) || "").replace(/{x}/, activeImage + 1).replace(/{y}/, images.length));
