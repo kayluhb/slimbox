@@ -1,6 +1,6 @@
 /* SLIMBOX */
 
-#lbOverlay {
+#lb-overlay {
 	position: fixed;
 	z-index: 9999;
 	left: 0;
@@ -11,18 +11,18 @@
 	cursor: pointer;
 }
 
-#lbCenter, #lbBottomContainer {
+#lb-center, #lb-bottom-container {
 	position: absolute;
 	z-index: 9999;
 	overflow: hidden;
 	background-color: #fff;
 }
 
-.lbLoading {
+.lb-loading {
 	background: #fff url(loading.gif) no-repeat center;
 }
 
-#lbImage {
+#lb-image {
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -30,7 +30,7 @@
 	background-repeat: no-repeat;
 }
 
-#lbPrevLink, #lbNextLink {
+#lb-prev-link, #lb-next-link {
 	display: block;
 	height:100%;
 	position: absolute;
@@ -39,17 +39,17 @@
 	outline: none;
 }
 
-#lbPrevLink {
+#lb-prev-link {
 	left: 0;
 	background: transparent url(prevlabel.gif) no-repeat 0 0;
 }
 
-#lbNextLink {
+#lb-next-link {
 	right: 0;
 	background: transparent url(nextlabel.gif) no-repeat 100% 0;
 }
 
-#lbBottom {
+#lb-bottom {
 	font-family: Verdana, Arial, Geneva, Helvetica, sans-serif;
 	font-size: 10px;
 	color: #666;
@@ -59,7 +59,7 @@
 	border-top-style: none;
 }
 
-#lbCloseLink {
+#lb-close-link {
 	display: block;
 	float: right;
 	width: 66px;
@@ -69,11 +69,11 @@
 	outline: none;
 }
 
-#lbCaption, #lbNumber {
+#lb-caption, #lb-number {
 	margin-right: 71px;
 	margin-left: 60px;
 }
 
-#lbCaption {
+#lb-caption {
 	font-weight: bold;
 }
