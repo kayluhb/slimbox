@@ -24,22 +24,22 @@
 		// Append the Slimbox HTML code at the bottom of the document
 		$("body").append(
 			$([
-				overlay = $('<div id="lbOverlay" />')[0],
-				center = $('<div id="lbCenter" />')[0],
-				bottomContainer = $('<div id="lbBottomContainer" />')[0]
+				overlay = $('<div id="lb-overlay" />')[0],
+				center = $('<div id="lb-center" />')[0],
+				bottomContainer = $('<div id="lb-bottom-container" />')[0]
 			]).css("display", "none")
 		);
 
-		image = $('<div id="lbImage" />').appendTo(center).append(
+		image = $('<div id="lb-image" />').appendTo(center).append(
 			sizer = $('<div style="position: relative;" />')[0]
 		)[0];
 
-		bottom = $('<div id="lbBottom" />').appendTo(bottomContainer).append([
-			$('<a id="lbCloseLink" href="#" />').add(overlay).click(close)[0],
-			caption = $('<div id="lbCaption" />')[0],
-			number = $('<div id="lbNumber" />')[0],
-			prevLink = $('<a id="lbPrevLink" href="#" />').click(previous)[0],
-			nextLink = $('<a id="lbNextLink" href="#" />').click(next)[0],
+		bottom = $('<div id="lb-bottom" />').appendTo(bottomContainer).append([
+			$('<a id="lb-closeLink" href="#" />').add(overlay).click(close)[0],
+			caption = $('<div id="lb-caption" />')[0],
+			number = $('<div id="lb-number" />')[0],
+			prevLink = $('<a id="lb-prev-link" href="#" />').click(previous)[0],
+			nextLink = $('<a id="lb-next-link" href="#" />').click(next)[0],
 			$('<div style="clear: both;" />')[0]
 		])[0];
 	});
@@ -177,7 +177,7 @@
 			nextImage = ((activeImage + 1) % images.length) || (options.loop ? 0 : -1);
 
 			stop();
-			center.className = "lbLoading";
+			center.className = "lb-loading";
 
 			preload = new Image();
 			preload.onload = animateBox;
