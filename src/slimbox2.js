@@ -7,7 +7,7 @@
 (function($) {
 
 	// Global variables, accessible to Slimbox only
-	var win = $(window), options, images, activeImage = -1, activeURL, prevImage, nextImage, compatibleOverlay, middle, centerWidth, centerHeight,
+	var win = $(window), options, images, activeImage = -1, activeURL, prevImage, nextImage, compatibleOverlay, middle, tarW, tarH,
 		ie6 = !window.XMLHttpRequest, hiddenElements = [], documentElement = document.documentElement,
 
 	// Preload images
@@ -31,7 +31,7 @@
 		);
 
 		image = $('<div id="lb-image" />').appendTo(center).append(
-			sizer = $('<div style="position: relative;" />')[0]
+			sizer = $('<div style="position:relative;" />')[0]
 		)[0];
 
 		bottom = $('<div id="lb-bottom" />').appendTo(bottomContainer).append([
@@ -64,7 +64,8 @@
 			counterText: "Image {x} of {y}",	// Translate or change as you wish, or set it to false to disable counter text for image groups
 			closeKeys: [27, 88, 67],		// Array of keycodes to close Slimbox, default: Esc (27), 'x' (88), 'c' (67)
 			previousKeys: [37, 80],			// Array of keycodes to navigate to the previous image, default: Left arrow (37), 'p' (80)
-			nextKeys: [39, 78]			// Array of keycodes to navigate to the next image, default: Right arrow (39), 'n' (78)
+			nextKeys: [39, 78],			// Array of keycodes to navigate to the next image, default: Right arrow (39), 'n' (78)
+			padding: 80 // The amount to pad the image when open.
 		}, _options);
 
 		// The function is called for a single image, with URL and Title as first two arguments
@@ -73,10 +74,10 @@
 			startImage = 0;
 		}
 
-		middle = win.scrollTop() + (win.height() / 2);
-		centerWidth = options.initialWidth;
-		centerHeight = options.initialHeight;
-		$(center).css({top: Math.max(0, middle - (centerHeight / 2)), width: centerWidth, height: centerHeight, marginLeft: -centerWidth/2}).show();
+		middle = win.scrollTop() + (win.height() * 0.5);
+		tarW = options.initialWidth;
+		tarH = options.initialHeight;
+		$(center).css({top: Math.max(0, middle - (tarH * 0.5)), width: tarW, height: tarH, marginLeft: -tarW * 0.5}).show();
 		compatibleOverlay = ie6 || (overlay.currentStyle && (overlay.currentStyle.position != "fixed"));
 		if (compatibleOverlay) overlay.style.position = "absolute";
 		$(overlay).css("opacity", options.overlayOpacity).fadeIn(options.overlayFadeDuration);
@@ -131,7 +132,7 @@
 
 	function position() {
 		var l = win.scrollLeft(), w = win.width();
-		$([center, bottomContainer]).css("left", l + (w / 2));
+		$([center, bottomContainer]).css("left", l + (w * 0.5));
 		if (compatibleOverlay) $(overlay).css({left: l, top: win.scrollTop(), width: w, height: win.height()});
 	}
 
@@ -189,7 +190,9 @@
 
 	function animateBox() {
 		center.className = "";
-		$(image).css({backgroundImage: "url(" + activeURL + ")", visibility: "hidden", display: ""});
+		var $img = $(image), $win = $(window);
+    $img.css({backgroundImage: "url(" + activeURL + ")", visibility: "hidden", display: ""});
+		
 		$(sizer).width(preload.width).height(preload.height);
 
 		$(caption).html(images[activeImage][1] || "");
@@ -197,19 +200,30 @@
 
 		if (prevImage >= 0) preloadPrev.src = images[prevImage][0];
 		if (nextImage >= 0) preloadNext.src = images[nextImage][0];
-
-		centerWidth = image.offsetWidth;
-		centerHeight = image.offsetHeight;
-		var top = Math.max(0, middle - (centerHeight / 2));
-		if (center.offsetHeight != centerHeight) {
-			$(center).animate({height: centerHeight, top: top}, options.resizeDuration, options.resizeEasing);
+    
+    var maxH = $win.height() - options.padding, maxW = $win.width() - options.padding;
+    
+		tarW = image.offsetWidth;
+		tarH = image.offsetHeight;
+		if (tarH > maxH) {
+		   tarW = tarW * (maxH / tarH);
+		   tarH = maxH;
 		}
-		if (center.offsetWidth != centerWidth) {
-			$(center).animate({width: centerWidth, marginLeft: -centerWidth/2}, options.resizeDuration, options.resizeEasing);
+		if (tarW > maxW){
+		    tarH = tarH * (maxW / tarW);
+  	    tarW = maxW;
+		}
+
+		var top = Math.max(0, middle - (tarH * 0.5));
+		if (center.offsetHeight != tarH) {
+			$(center).animate({height: tarH, top: top}, options.resizeDuration, options.resizeEasing);
+		}
+		if (center.offsetWidth != tarW) {
+			$(center).animate({width: tarW, marginLeft: -tarW * 0.5}, options.resizeDuration, options.resizeEasing);
 		}
 		$(center).queue(function() {
-			$(bottomContainer).css({width: centerWidth, top: top + centerHeight, marginLeft: -centerWidth/2, visibility: "hidden", display: ""});
-			$(image).css({display: "none", visibility: "", opacity: ""}).fadeIn(options.imageFadeDuration, animateCaption);
+			$(bottomContainer).css({width: tarW, top: top + tarH, marginLeft: -tarW * 0.5, visibility: "hidden", display: ""});
+			$img.css({ backgroundSize:tarW + "px " + tarH + "px", display: "none", visibility: "", opacity: ""}).fadeIn(options.imageFadeDuration, animateCaption);
 		});
 	}
 
