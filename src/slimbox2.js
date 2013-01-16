@@ -5,7 +5,7 @@
 */
 (function ($) {
     // Global variables, accessible to Slimbox only
-    var win = $(window),
+    var $win = $(window),
         options,
         images,
         activeImage = -1,
@@ -16,7 +16,6 @@
         middle,
         tarW,
         tarH,
-        ie6 = !window.XMLHttpRequest,
         hiddenElements = [],
         documentElement = document.documentElement,
         // Preload images
@@ -24,47 +23,45 @@
         preloadPrev = new Image(),
         preloadNext = new Image(),
         // DOM elements
-        overlay,
-        center,
-        image,
-        sizer,
-        prevLink,
-        nextLink,
-        bottomContainer,
-        bottom,
-        caption,
-        number;
+        $overlay,
+        $center,
+        $image,
+        $sizer,
+        $prevLink,
+        $nextLink,
+        $bottomContainer,
+        $bottom,
+        $caption,
+        $number;
     /*
-      Initialization
+        Initialization
     */
     $(function () {
         // Append the Slimbox HTML code at the bottom of the document
-        $("body")
-            .append(
-        $([
-        overlay = $('<div id="lb-overlay" />')[0],
-        center = $('<div id="lb-center" />')[0],
-        bottomContainer = $('<div id="lb-bottom-container" />')[0]])
-            .css("display", "none"));
-        image = $('<div id="lb-image" />')
-            .appendTo(center)
-            .append(
-        sizer = $('<div style="position:relative;" />')[0])[0];
-        bottom = $('<div id="lb-bottom" class="clearfix" />')
-            .appendTo(bottomContainer)
-            .append([
-        $('<a id="lb-closeLink" href="#" />')
-            .add(overlay)
-            .click(close)[0],
-        caption = $('<div id="lb-caption" />')[0],
-        number = $('<div id="lb-number" />')[0],
-        prevLink = $('<a id="lb-prev-link" href="#" />')
-            .click(previous)[0],
-        nextLink = $('<a id="lb-next-link" href="#" />')
-            .click(next)[0]])[0];
+        $overlay = $('<div id="lb-overlay"></div>');
+        $center = $('<div id="lb-center"></div>');
+        $image = $('<div id="lb-image"></div>');
+        $sizer = $('<div style="position:relative;" />');
+        $image.append($sizer);
+        $center.append($image);
+
+        $bottomContainer = $('<div id="lb-bottom-container">').css({ display:'none' });
+        $bottom = $('<div id="lb-bottom" class="clearfix"></div>');
+        $caption = $('<div id="lb-caption"></div>');
+        $number = $('<div id="lb-number"></div>');
+        $prevLink = $('<a id="lb-prev-link" href="#"></a>');
+        $nextLink = $('<a id="lb-next-link" href="#"></a>');
+        $bottom.append($caption, $number, $prevLink, $nextLink);
+        $bottomContainer.append($bottom);
+        
+        $('body').append($overlay, $center, $bottomContainer);
+
+        $prevLink.click(previous);
+        $nextLink.click(next);
+        $overlay.click(close);
     });
     /*
-      API
+        API
     */
     // Open Slimbox with the specified parameters
     $.slimbox = function (_images, startImage, _options) {
@@ -91,20 +88,24 @@
             ];
             startImage = 0;
         }
-        middle = win.scrollTop() + (win.height() * 0.5);
+        middle = $win.scrollTop() + ($win.height() * 0.5);
         tarW = options.initialWidth;
         tarH = options.initialHeight;
-        $(center)
+        $center
             .css({
-            top: Math.max(0, middle - (tarH * 0.5)),
-            width: tarW,
-            height: tarH,
-            marginLeft: -tarW * 0.5
-        })
+                top: Math.max(0, middle - (tarH * 0.5)),
+                width: tarW,
+                height: tarH,
+                marginLeft: -tarW * 0.5
+            })
             .show();
-        compatibleOverlay = ie6 || (overlay.currentStyle && (overlay.currentStyle.position != "fixed"));
-        if (compatibleOverlay) overlay.style.position = "absolute";
-        $(overlay)
+
+        compatibleOverlay = $overlay.currentStyle && ($overlay.currentStyle.position != "fixed");
+        if (compatibleOverlay) {
+            $overlay.css({ position: "absolute" });
+        }
+
+        $overlay
             .css("opacity", options.overlayOpacity)
             .fadeIn(options.overlayFadeDuration);
         position();
@@ -129,45 +130,35 @@
             return true;
         };
         var links = this;
-        return links.unbind("click")
+        return links.off("click")
             .click(function () {
-            // Build the list of images that will be displayed
-            var link = this,
-                startIndex = 0,
-                filteredLinks, i = 0,
-                length;
-            filteredLinks = $.grep(links, function (el, i) {
-                return linksFilter.call(link, el, i);
+                // Build the list of images that will be displayed
+                var link = this,
+                    startIndex = 0,
+                    filteredLinks, i = 0,
+                    length;
+                filteredLinks = $.grep(links, function (el, i) {
+                    return linksFilter.call(link, el, i);
+                });
+                // We cannot use jQuery.map() because it flattens the returned array
+                for (length = filteredLinks.length; i < length; ++i) {
+                    if (filteredLinks[i] == link) startIndex = i;
+                    filteredLinks[i] = linkMapper(filteredLinks[i], i);
+                }
+                return $.slimbox(filteredLinks, startIndex, _options);
             });
-            // We cannot use jQuery.map() because it flattens the returned array
-            for (length = filteredLinks.length; i < length; ++i) {
-                if (filteredLinks[i] == link) startIndex = i;
-                filteredLinks[i] = linkMapper(filteredLinks[i], i);
-            }
-            return $.slimbox(filteredLinks, startIndex, _options);
-        });
     };
     /*
-    Internal functions
-  */
+        Internal functions
+    */
     function position() {
-        var l = win.scrollLeft(),
-            w = win.width();
-        $([center, bottomContainer])
-            .css("left", l + (w * 0.5));
-        if (compatibleOverlay) $(overlay)
-            .css({
-            left: l,
-            top: win.scrollTop(),
-            width: w,
-            height: win.height()
-        });
+        
     }
 
     function setup(open) {
         if (open) {
             $("object")
-                .add(ie6 ? "select" : "embed")
+                .add("embed")
                 .each(function (index, el) {
                 hiddenElements[index] = [el, el.style.visibility];
                 el.style.visibility = "hidden";
@@ -178,8 +169,8 @@
             });
             hiddenElements = [];
         }
-        var fn = open ? "bind" : "unbind";
-        win[fn]("scroll resize", position);
+        var fn = open ? "on" : "off";
+        $win[fn]("scroll resize", position);
         $(document)[fn]("keydown", keyDown);
     }
 
@@ -205,7 +196,7 @@
             prevImage = (activeImage || (options.loop ? images.length : 0)) - 1;
             nextImage = ((activeImage + 1) % images.length) || (options.loop ? 0 : -1);
             stop();
-            center.className = "lb-loading";
+            $center[0].className = "lb-loading";
             preload = new Image();
             preload.onload = animateBox;
             preload.src = activeURL;
@@ -214,29 +205,35 @@
     }
 
     function animateBox() {
-        center.className = "";
-        var $img = $(image),
-            $win = $(window);
+        
+        $center.className = "";
+        var $img = $image;
+
         $img.css({
             backgroundImage: "url(" + activeURL + ")",
             visibility: "hidden",
             display: ""
         });
-        $(sizer)
+        $sizer
             .width(preload.width)
             .height(preload.height);
-        $(caption)
+        $caption
             .html(images[activeImage][1] || "");
-        $(number)
+        $number
             .html((((images.length > 1) && options.counterText) || "")
-            .replace(/{x}/, activeImage + 1)
-            .replace(/{y}/, images.length));
-        if (prevImage >= 0) preloadPrev.src = images[prevImage][0];
-        if (nextImage >= 0) preloadNext.src = images[nextImage][0];
+            .replace(/\{x\}/, activeImage + 1)
+            .replace(/\{y\}/, images.length));
+        if (prevImage >= 0) {
+            preloadPrev.src = images[prevImage][0];
+        }
+        if (nextImage >= 0) {
+            preloadNext.src = images[nextImage][0];
+        }
         var maxH = $win.height() - options.padding,
             maxW = $win.width() - options.padding;
-        tarW = image.offsetWidth;
-        tarH = image.offsetHeight;
+        tarW = $image[0].offsetWidth;
+        tarH = $image[0].offsetHeight;
+
         if (tarH > maxH) {
             tarW = tarW * (maxH / tarH);
             tarH = maxH;
@@ -246,73 +243,78 @@
             tarW = maxW;
         }
         var top = Math.max(0, middle - (tarH * 0.5)) - 20;
-        if (center.offsetHeight != tarH) {
-            $(center)
+        if ($center[0].offsetHeight != tarH) {
+            $center
                 .animate({
-                height: tarH,
-                top: top
-            }, options.resizeDuration, options.resizeEasing);
+                    height: tarH,
+                    top: top
+                }, options.resizeDuration, options.resizeEasing);
         }
-        if (center.offsetWidth != tarW) {
-            $(center)
+        if ($center[0].offsetWidth != tarW) {
+            $center
                 .animate({
-                width: tarW,
-                marginLeft: -tarW * 0.5
-            }, options.resizeDuration, options.resizeEasing);
+                    width: tarW,
+                    marginLeft: -tarW * 0.5
+                }, options.resizeDuration, options.resizeEasing);
         }
-        $(center)
+        $center
             .queue(function () {
-            $(bottomContainer)
-                .css({
-                width: tarW,
-                top: top + tarH,
-                marginLeft: -tarW * 0.5,
-                visibility: "hidden",
-                display: ""
+                $bottomContainer
+                    .css({
+                        width: tarW,
+                        top: top + tarH,
+                        marginLeft: -tarW * 0.5,
+                        visibility: "hidden",
+                        display: ""
+                    });
+                $img.css({
+                        backgroundSize: tarW + "px " + tarH + "px",
+                        display: "none",
+                        visibility: "",
+                        opacity: ""
+                    })
+                    .fadeIn(options.imageFadeDuration, animateCaption);
             });
-            $img.css({
-                backgroundSize: tarW + "px " + tarH + "px",
-                display: "none",
-                visibility: "",
-                opacity: ""
-            })
-                .fadeIn(options.imageFadeDuration, animateCaption);
-        });
     }
 
     function animateCaption() {
         if (prevImage >= 0) {
-            $(prevLink)
+            $prevLink
                 .show();
         }
         if (nextImage >= 0) {
-            $(nextLink)
+            $nextLink
                 .show();
         }
-        $(bottom)
-            .css("marginTop", -bottom.offsetHeight)
+        $bottom
+            .css("marginTop", -$bottom[0].offsetHeight)
             .animate({
             marginTop: 0
         }, options.captionAnimationDuration);
-        bottomContainer.style.visibility = "";
+        $bottomContainer.css({ visibility: ""});
     }
 
     function stop() {
         preload.onload = null;
         preload.src = preloadPrev.src = preloadNext.src = activeURL;
-        $([center, image, bottom])
-            .stop(true);
-        $([prevLink, nextLink, image, bottomContainer])
-            .hide();
+        
+        $center.stop();
+        $image.stop();
+        $bottom.stop();
+        
+        $prevLink.hide();
+        $nextLink.hide();
+        $image.hide();
+        $bottomContainer.hide();
     }
 
     function close() {
         if (activeImage >= 0) {
             stop();
             activeImage = prevImage = nextImage = -1;
-            $(center)
+            $center
                 .hide();
-            $(overlay)
+            $overlay
                 .stop()
                 .fadeOut(options.overlayFadeDuration, setup);
         }
