@@ -55,7 +55,7 @@
         $nextLink = $('<a id="lb-next-link" href="#"></a>');
         $bottom.append($caption, $number, $prevLink, $nextLink);
         $bottomContainer.append($bottom);
-        
+
         $('body').append($overlay, $center, $bottomContainer);
 
         $prevLink.click(previous);
@@ -153,9 +153,7 @@
     /*
         Internal functions
     */
-    function position() {
-        
-    }
+    function position() { }
 
     function setup(open) {
         if (open) {
@@ -180,7 +178,10 @@
         var code = event.keyCode,
             fn = $.inArray;
         // Prevent default keyboard action (like navigating inside the page)
-        return (fn(code, options.closeKeys) >= 0) ? close() : (fn(code, options.nextKeys) >= 0) ? next() : (fn(code, options.previousKeys) >= 0) ? previous() : false;
+        return (fn(code, options.closeKeys) >= 0) ? close() :
+                (fn(code, options.nextKeys) >= 0) ? next() :
+                (fn(code, options.previousKeys) >= 0) ? previous() :
+                true;
     }
 
     function previous() {
@@ -207,7 +208,7 @@
     }
 
     function animateBox() {
-        
+
         $center.className = "";
         var $img = $image;
 
@@ -299,11 +300,11 @@
     function stop() {
         preload.onload = null;
         preload.src = preloadPrev.src = preloadNext.src = activeURL;
-        
+
         $center.stop();
         $image.stop();
         $bottom.stop();
-        
+
         $prevLink.hide();
         $nextLink.hide();
         $image.hide();
